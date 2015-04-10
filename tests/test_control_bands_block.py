@@ -48,6 +48,13 @@ class TestControlBands(NIOBlockTestCase):
         self._blk.stop()
         super().tearDown()
 
+    def get_test_modules(self):
+        return super().get_test_modules() + ['persistence']
+
+    def get_module_config_persistence(self):
+        """ Make sure we use in-memory persistence """
+        return {'persistence': 'default'}
+
     def test_drop_old(self):
         """ Tests that old values are dropped """
         result = self._blk.record_values([Signal({

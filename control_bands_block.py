@@ -5,12 +5,14 @@ from nio.util.attribute_dict import AttributeDict
 from nio.common.block.base import Block
 from nio.common.discovery import Discoverable, DiscoverableType
 from nio.metadata.properties import TimeDeltaProperty, ExpressionProperty
+from nio.metadata.properties.version import VersionProperty
 from nio.modules.threading import Lock
 from .mixins.group_by.group_by_block import GroupBy
+from .mixins.persistence.persistence import Persistence
 
 
 @Discoverable(DiscoverableType.block)
-class ControlBands(GroupBy, Block):
+class ControlBands(GroupBy, Persistence, Block):
 
     band_interval = TimeDeltaProperty(
         default={"days": 1}, title="Band Interval")
@@ -18,6 +20,7 @@ class ControlBands(GroupBy, Block):
         default="{{$value}}",
         title="Value",
         attr_default=AttributeError)
+    version = VersionProperty("0.1.0")
 
     def __init__(self):
         super().__init__()
@@ -29,6 +32,10 @@ class ControlBands(GroupBy, Block):
 
         if sigs_out:
             self.notify_signals(sigs_out)
+
+    def persisted_values(self):
+        """ Overridden from persistence mixin """
+        return {'band_values': '_band_values'}
 
     def record_values(self, signals, group):
         """ Save the time and the list of signals for each group.
