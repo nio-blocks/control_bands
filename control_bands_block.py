@@ -40,7 +40,7 @@ class ControlBands(GroupBy, Persistence, Block):
     def record_values(self, signals, group):
         """ Save the time and the list of signals for each group.
 
-        This will return signals with the mean/std dev included on them """
+        This will return signals with the mean/band data included on them """
         sigs_out = []
 
         with self._signals_lock:
