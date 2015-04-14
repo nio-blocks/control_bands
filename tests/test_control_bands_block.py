@@ -180,6 +180,28 @@ class TestControlBands(NIOBlockTestCase):
             self._blk._get_current_values('A').count_items,
             len(expected) + 1)
 
+    def test_signal_values(self):
+        """ Make sure a signal gets the right band data values """
+        bd = BandData()
+        # Simulate 5 old values
+        [bd.register_value(i) for i in range(5)]
+        # Mean should be: 2.0
+        # Range should be: 0.88652
+
+        sig = Signal({'old': 'value'})
+        sig_out = self._blk._enrich_signal(sig, bd, 10)
+
+        # Make sure the old stuff stuck around
+        self.assertEqual(sig_out.old, 'value')
+
+        # Make sure all of the right band data got saved
+        self.assertAlmostEqual(sig_out.band_data.value, 10)
+        self.assertAlmostEqual(sig_out.band_data.mean, 2.0)
+        self.assertAlmostEqual(sig_out.band_data.deviation, 0.8865, 3)
+        self.assertAlmostEqual(
+            sig_out.band_data.deviations, (10 - 2.0) / 0.8865, 3)
+
+
     def _assert_signal_meets_expected(self, signal, values_to_expect, value):
         """ Make sure that a signal's data matches what we thought we'd get """
         self.assertEqual(signal.band_data.value, value)
