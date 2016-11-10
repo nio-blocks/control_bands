@@ -100,9 +100,14 @@ class ControlBands(GroupBy, Persistence, Block):
                 self.deviation = deviation
                 self.deviations = deviations
 
+            def to_dict(self):
+                """represent all BandSignalData attributes as a dict"""
+                return self.__dict__
+
         setattr(signal,
                 'band_data',
-                BandSignalData(value, range_mean, range_deviation, deviations))
+                BandSignalData(value, range_mean, range_deviation, deviations
+                               ).to_dict())
 
         return signal
 

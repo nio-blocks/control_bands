@@ -190,17 +190,17 @@ class TestControlBands(NIOBlockTestCase):
         self.assertEqual(sig_out.old, 'value')
 
         # Make sure all of the right band data got saved
-        self.assertAlmostEqual(sig_out.band_data.value, 10)
-        self.assertAlmostEqual(sig_out.band_data.mean, 2.0)
-        self.assertAlmostEqual(sig_out.band_data.deviation, 0.8865, 3)
+        self.assertAlmostEqual(sig_out.band_data['value'], 10)
+        self.assertAlmostEqual(sig_out.band_data['mean'], 2.0)
+        self.assertAlmostEqual(sig_out.band_data['deviation'], 0.8865, 3)
         self.assertAlmostEqual(
-            sig_out.band_data.deviations, (10 - 2.0) / 0.8865, 3)
+            sig_out.band_data['deviations'], (10 - 2.0) / 0.8865, 3)
 
     def _assert_signal_meets_expected(self, signal, values_to_expect, value):
         """ Make sure that a signal's data matches what we thought we'd get """
-        self.assertEqual(signal.band_data.value, value)
+        self.assertEqual(signal.band_data['value'], value)
         self.assertAlmostEqual(
-            signal.band_data.mean,
+            signal.band_data['mean'],
             mean(values_to_expect))
 
     def test_signals_notified(self):
