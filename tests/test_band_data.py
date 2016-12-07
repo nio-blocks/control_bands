@@ -1,6 +1,6 @@
 import pickle
 from ..band_data import BandData, LIMIT_FACTOR
-from nio.util.support.block_test_case import NIOBlockTestCase
+from nio.testing.block_test_case import NIOBlockTestCase
 
 EXAMPLE_DATA = [49.6, 47.6, 49.9, 51.3, 47.8, 51.2, 52.6, 52.4, 53.6, 52.1]
 

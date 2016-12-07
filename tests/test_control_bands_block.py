@@ -3,10 +3,13 @@ from unittest.mock import MagicMock
 from time import time
 from datetime import timedelta
 from statistics import mean
+
+from nio.block.terminals import DEFAULT_TERMINAL
+from nio.signal.base import Signal
+from nio.testing.block_test_case import NIOBlockTestCase
+
 from ..control_bands_block import ControlBands
 from ..band_data import BandData
-from nio.common.signal.base import Signal
-from nio.util.support.block_test_case import NIOBlockTestCase
 
 
 class BandDataFromList(BandData):
@@ -21,7 +24,6 @@ class TestControlBands(NIOBlockTestCase):
 
     def setUp(self):
         super().setUp()
-        self._signals_notified = []
         self._blk = ControlBands()
 
         now = time()
@@ -56,13 +58,6 @@ class TestControlBands(NIOBlockTestCase):
     def tearDown(self):
         self._blk.stop()
         super().tearDown()
-
-    def get_test_modules(self):
-        return super().get_test_modules() + ['persistence']
-
-    def get_module_config_persistence(self):
-        """ Make sure we use in-memory persistence """
-        return {'persistence': 'default'}
 
     def test_drop_old(self):
         """ Tests that old values are dropped """
@@ -195,18 +190,17 @@ class TestControlBands(NIOBlockTestCase):
         self.assertEqual(sig_out.old, 'value')
 
         # Make sure all of the right band data got saved
-        self.assertAlmostEqual(sig_out.band_data.value, 10)
-        self.assertAlmostEqual(sig_out.band_data.mean, 2.0)
-        self.assertAlmostEqual(sig_out.band_data.deviation, 0.8865, 3)
+        self.assertAlmostEqual(sig_out.band_data['value'], 10)
+        self.assertAlmostEqual(sig_out.band_data['mean'], 2.0)
+        self.assertAlmostEqual(sig_out.band_data['deviation'], 0.8865, 3)
         self.assertAlmostEqual(
-            sig_out.band_data.deviations, (10 - 2.0) / 0.8865, 3)
-
+            sig_out.band_data['deviations'], (10 - 2.0) / 0.8865, 3)
 
     def _assert_signal_meets_expected(self, signal, values_to_expect, value):
         """ Make sure that a signal's data matches what we thought we'd get """
-        self.assertEqual(signal.band_data.value, value)
+        self.assertEqual(signal.band_data['value'], value)
         self.assertAlmostEqual(
-            signal.band_data.mean,
+            signal.band_data['mean'],
             mean(values_to_expect))
 
     def test_signals_notified(self):
@@ -215,9 +209,6 @@ class TestControlBands(NIOBlockTestCase):
         self._blk.record_values = MagicMock(return_value=out_signals)
         # Simulate something going into the block, doesn't matter what, the
         # recording of values is mocked
-        self._blk.process_signals([Signal()])
+        self._blk.process_signals([Signal({'group': None})])
         # Make sure we the block notified what record values returned
-        self.assertEqual(self._signals_notified, out_signals)
-
-    def signals_notified(self, signals, output_id='default'):
-        self._signals_notified.extend(signals)
+        self.assertEqual(self.last_notified[DEFAULT_TERMINAL], out_signals)

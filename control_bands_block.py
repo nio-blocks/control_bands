@@ -1,25 +1,21 @@
 from collections import defaultdict
 from time import time as _time
-from nio.util.attribute_dict import AttributeDict
-from nio.common.block.base import Block
-from nio.common.discovery import Discoverable, DiscoverableType
-from nio.metadata.properties import TimeDeltaProperty, ExpressionProperty
-from nio.metadata.properties.version import VersionProperty
-from nio.modules.threading import Lock
+from nio.block.base import Block
+from nio.util.discovery import discoverable
+from nio.properties import TimeDeltaProperty, Property
+from nio.properties.version import VersionProperty
+from threading import Lock
 from .band_data import BandData
-from .mixins.group_by.group_by_block import GroupBy
-from .mixins.persistence.persistence import Persistence
+from nio.block.mixins.group_by.group_by import GroupBy
+from nio.block.mixins.persistence.persistence import Persistence
 
 
-@Discoverable(DiscoverableType.block)
+@discoverable
 class ControlBands(GroupBy, Persistence, Block):
 
     band_interval = TimeDeltaProperty(
         default={"days": 1}, title="Band Interval")
-    value_expr = ExpressionProperty(
-        default="{{$value}}",
-        title="Value",
-        attr_default=AttributeError)
+    value_expr = Property(default="{{ $value }}", title="Value")
     version = VersionProperty("0.2.0")
 
     def __init__(self):
@@ -29,13 +25,12 @@ class ControlBands(GroupBy, Persistence, Block):
 
     def process_signals(self, signals, input_id='default'):
         sigs_out = self.for_each_group(self.record_values, signals)
-
         if sigs_out:
             self.notify_signals(sigs_out)
 
     def persisted_values(self):
         """ Overridden from persistence mixin """
-        return {'band_values': '_band_values'}
+        return ['_band_values']
 
     def record_values(self, signals, group):
         """ Save the time and the list of signals for each group.
@@ -49,7 +44,7 @@ class ControlBands(GroupBy, Persistence, Block):
             self.trim_old_values(group, ctime)
 
             prev_values = self._get_current_values(group)
-            self._logger.debug(
+            self.logger.debug(
                 "Previous values for group: {}".format(prev_values))
             # Start off a new band data using the latest value from the
             # previous band data objects
@@ -68,7 +63,7 @@ class ControlBands(GroupBy, Persistence, Block):
                     # Now account for the latest value in the moving range data
                     new_values.register_value(value)
                 except:
-                    self._logger.exception(
+                    self.logger.exception(
                         "Unable to determine value for signal {}".format(sig))
 
             # Archive the new values
@@ -97,13 +92,22 @@ class ControlBands(GroupBy, Persistence, Block):
         else:
             deviations = 0
 
-        band_data = AttributeDict({
-            'value': value,
-            'mean': range_mean,
-            'deviation': range_deviation,
-            'deviations': deviations
-        })
-        setattr(signal, 'band_data', band_data)
+        class BandSignalData():
+
+            def __init__(self, value, mean, deviation, deviations):
+                self.value = value
+                self.mean = mean
+                self.deviation = deviation
+                self.deviations = deviations
+
+            def to_dict(self):
+                """represent all BandSignalData attributes as a dict"""
+                return self.__dict__
+
+        setattr(signal,
+                'band_data',
+                BandSignalData(value, range_mean, range_deviation, deviations
+                               ).to_dict())
 
         return signal
 
@@ -127,9 +131,9 @@ class ControlBands(GroupBy, Persistence, Block):
     def trim_old_values(self, group, ctime):
         """ Remove any "old" saved values for a given group """
         group_values = self._band_values[group]
-        self._logger.debug("Trimming old values - had {} items".format(
+        self.logger.debug("Trimming old values - had {} items".format(
             len(group_values)))
         group_values[:] = [
             data for data in group_values
-            if data[0] > ctime - self.band_interval.total_seconds()]
-        self._logger.debug("Now has {} items".format(len(group_values)))
+            if data[0] > ctime - self.band_interval().total_seconds()]
+        self.logger.debug("Now has {} items".format(len(group_values)))

@@ -11,7 +11,7 @@ Properties
 --------------
 -   **Band Interval** (timedelta): How far back data should be pulled from to populate band data
 -   **Value** (expression): How to get the value out of the signal
--   **group_by**: Expression proprety. The value by which signals are grouped. There is one band per group.
+-   **group_by**: Expression property. The value by which signals are grouped. There is one band per group.
 
 
 Dependencies
