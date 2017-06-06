@@ -1,0 +1,7 @@
+{
+  "nio/ControlBands": {
+    "Language": "Python",
+    "Version": "1.0.0",
+    "Reference": "github.com/nio-blocks/control_bands.git@v1.0.0"
+  }
+}

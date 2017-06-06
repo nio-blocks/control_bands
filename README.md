@@ -1,5 +1,5 @@
-# ControlBands
-
+ControlBands
+==============
 Create "Moving Range" charts for different numeric values.
 
 This block will maintain "bands" for a period of time and for different groups of signals. A band is basically a moving range calculation that updates dynamically. This block is useful for determining if a signal is an outlier from normal operation.
@@ -9,15 +9,14 @@ For an explanation on the mathematics of the moving range calculation, see http:
 
 Properties
 --------------
--   **Band Interval** (timedelta): How far back data should be pulled from to populate band data
--   **Value** (expression): How to get the value out of the signal
--   **group_by**: Expression property. The value by which signals are grouped. There is one band per group.
+-   **Band Interval** (type=timedelta): How far back data should be pulled from to populate band data
+-   **Value** (type=expression): How to get the value out of the signal
+-   **group_by**: (type=expression) The value by which signals are grouped. There is one band per group.
 
 
 Dependencies
 ----------------
-[GroupBy Mixin](https://github.com/nio-blocks/mixins/tree/master/group_by)
-[Persistence Mixin](https://github.com/nio-blocks/mixins/tree/master/persistence)
+None
 
 Commands
 ----------------
@@ -32,6 +31,6 @@ Output
 
 -   **band_data**: A dictionary with data about the control bands for the signal's group
   - **value**: The value of the signal
-  - **mean**: The mean of the band (exclusive of the signal's value)
-  - **deviation**: The size of the band (exclusive of the signal's value). Equal to 0 if there is only one value in the band. This is equal to the mean of the moving ranges.
+  - **mean**: The mean of the band, exclusive of the signal's value.
+  - **deviation**: The size of the band, exclusive of the signal's value. Equal to 0 if there is only one value in the band. This is equal to the mean of the moving ranges.
   - **deviations**: How many band sizes this signal's value is from the mean. Equal to 0 if there is only one value in the band.
