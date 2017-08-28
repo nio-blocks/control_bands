@@ -1,16 +1,16 @@
 from collections import defaultdict
 from time import time as _time
+from threading import Lock
+
 from nio.block.base import Block
-from nio.util.discovery import discoverable
 from nio.properties import TimeDeltaProperty, Property
 from nio.properties.version import VersionProperty
-from threading import Lock
-from .band_data import BandData
 from nio.block.mixins.group_by.group_by import GroupBy
 from nio.block.mixins.persistence.persistence import Persistence
 
+from .band_data import BandData
 
-@discoverable
+
 class ControlBands(GroupBy, Persistence, Block):
 
     band_interval = TimeDeltaProperty(
