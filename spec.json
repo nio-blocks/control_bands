@@ -1,10 +1,58 @@
 {
   "nio/ControlBands": {
-    "version": "0.0.1",
-    "description": "",
-    "inputs": {},
-    "outputs": {},
-    "properties": {},
-    "commands": {}
+    "version": "0.2.0",
+    "description": "Create 'Moving Range' charts for different numeric values.  This block will maintain 'bands' for a period of time and for different groups of signals. A band is basically a moving range calculation that updates dynamically. This block is useful for determining if a signal is an outlier from normal operation.  For an explanation on the mathematics of the moving range calculation, see http://www.itl.nist.gov/div898/handbook/pmc/section3/pmc322.htm",
+    "properties": {
+      "backup_interval": {
+        "title": "Backup Interval",
+        "type": "TimeDeltaType",
+        "description": "How often to save persisted data.",
+        "default": {
+          "seconds": 3600
+        }
+      },
+      "band_interval": {
+        "title": "Band Interval",
+        "type": "TimeDeltaType",
+        "description": "How far back data should be pulled from to populate band data.",
+        "default": {
+          "days": 1
+        }
+      },
+      "group_by": {
+        "title": "Group By",
+        "type": "Type",
+        "description": "Signal attribute to define groupings of incoming signals.",
+        "default": null
+      },
+      "load_from_persistence": {
+        "title": "Load from Persistence?",
+        "type": "BoolType",
+        "description": "If true, the block’s state will be saved at a block stoppage and reloaded upon restart.",
+        "default": true
+      },
+      "value_expr": {
+        "title": "Value",
+        "type": "Type",
+        "description": "How to get the value out of the signal.",
+        "default": "{{ $value }}"
+      }
+    },
+    "inputs": {
+      "default": {
+        "description": "Any list of signals with numeric values."
+      }
+    },
+    "outputs": {
+      "default": {
+        "description": "Signal containing band data, value, mean, deviation, and deviations.  See below for descriptions."
+      }
+    },
+    "commands": {
+      "groups": {
+        "params": {},
+        "description": "Return a list of the block’s current signal groupings."
+      }
+    }
   }
 }
