@@ -16,7 +16,7 @@ class ControlBands(GroupBy, Persistence, Block):
     band_interval = TimeDeltaProperty(
         default={"days": 1}, title="Band Interval")
     value_expr = Property(default="{{ $value }}", title="Value")
-    version = VersionProperty("1.0.0")
+    version = VersionProperty("1.0.1")
 
     def __init__(self):
         super().__init__()
