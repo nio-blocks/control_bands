@@ -1,14 +1,14 @@
 ControlBands
 ============
-Create 'Moving Range' charts for different numeric values.  This block will maintain 'bands' for a period of time and for different groups of signals. A band is basically a moving range calculation that updates dynamically. This block is useful for determining if a signal is an outlier from normal operation.  For an explanation on the mathematics of the moving range calculation, see http://www.itl.nist.gov/div898/handbook/pmc/section3/pmc322.htm
+The ControlBands block creates 'Moving Range' charts for different numeric values. This block will maintain 'bands' for a period of time and for different groups of signals. A band is a moving range calculation that updates dynamically with incoming signals. The block also outputs the mean, count, and sum of the signals inside the **band interval**, and is useful for determining if signal values are outliers.
 
 Properties
 ----------
-- **backup_interval**: How often to save persisted data.
-- **band_interval**: How far back data should be pulled from to populate band data.
-- **group_by**: Signal attribute to define groupings of incoming signals.
-- **load_from_persistence**: If true, the block’s state will be saved at a block stoppage and reloaded upon restart.
-- **value_expr**: How to get the value out of the signal.
+- **backup_interval**: An interval of time that specifies how often persisted data is saved.
+- **band_interval**: The time range of signals used to calculate the band data.
+- **group_by**: The signal attribute on the incoming signal whose values will be used to define groups on the outgoing signal.
+- **load_from_persistence**: If `True`, the block’s state will be saved when the block is stopped, and reloaded once the block is restarted.
+- **value_expr**: The incoming signal attribute that will be used for band data calculations.
 
 Inputs
 ------
@@ -16,11 +16,11 @@ Inputs
 
 Outputs
 -------
-- **default**: Signal containing band data, value, mean, deviation, and deviations.  See below for descriptions.
+- **default**: Signal containing band data, value, mean, deviation, and deviations.
 
 Commands
 --------
-- **groups**: Return a list of the block’s current signal groupings.
+- **groups**: Returns a list of the block’s current signal groupings.
 
 Dependencies
 ------------
